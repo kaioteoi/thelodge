@@ -161,3 +161,8 @@ venv.bak/
 # dotenv environment variables file
 .env
 
+# Fking ds_store
+.DS_Store
+
+#sass cache
+.sass-cahce

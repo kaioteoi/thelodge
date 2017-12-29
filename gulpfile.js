@@ -14,16 +14,14 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'),
+    cache = require('gulp-cache'),
     livereload = require('gulp-livereload'),
     del = require('del');
 
 // Styles
 gulp.task('styles', function() {
-  return sass('src/styles/main.scss', { style: 'expanded' })
+  return sass('src/styles/**/*.scss', { style: 'expanded' })
     .pipe(autoprefixer('last 2 version'))
-    .pipe(gulp.dest('build/styles'))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(cssnano())
     .pipe(gulp.dest('build/styles'))
     .pipe(notify({ message: 'Styles task complete' }));
 });
@@ -31,18 +29,35 @@ gulp.task('styles', function() {
 // Scripts
 gulp.task('scripts', function() {
   return gulp.src('src/scripts/**/*.js')
+    .pipe(jshint())
     .pipe(jshint.reporter('default'))
-    .pipe(concat('main.js'))
-    .pipe(gulp.dest('build/scripts'))
+    .pipe(notify({ message: 'Scripts task complete' }));
+});
+
+// Min
+gulp.task('minify-css', function() {
+   return sass('src/styles/**/*.scss', { style: 'expanded' })
+    .pipe(autoprefixer('last 2 version'))
+    .pipe(gulp.dest('build/styles'))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(cssnano())
+    .pipe(gulp.dest('build/styles'))
+    .pipe(notify({ message: 'Styles task complete' }));
+});
+gulp.task('minify-js', function() {
+  return gulp.src('src/scripts/**/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
     .pipe(rename({ suffix: '.min' }))
     .pipe(uglify())
     .pipe(gulp.dest('build/scripts'))
-    .pipe(notify({ message: 'Scripts task complete' }));
+    .pipe(notify({ message: 'Scripts minified' }));
 });
 
 // Images
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
+    .pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
     .pipe(gulp.dest('build/images'))
     .pipe(notify({ message: 'Images task complete' }));
 });
@@ -54,7 +69,7 @@ gulp.task('clean', function() {
 
 // Default task
 gulp.task('default', ['clean'], function() {
-  gulp.start('styles', 'scripts', 'images');
+  gulp.start('minify-css', 'minify-js', 'images');
 });
 
 // Watch

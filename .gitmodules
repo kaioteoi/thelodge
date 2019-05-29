@@ -1,0 +1,6 @@
+[submodule "thelodge-back"]
+	path = thelodge-back
+	url = git@github.com:kaioteoi/thelodge-back.git
+[submodule "thelodge-front"]
+	path = thelodge-front
+	url = git@github.com:kaioteoi/thelodge-front.git
